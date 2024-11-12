@@ -1,8 +1,8 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { Button } from "./components/ui/button";
-import Auth from "./pages/auth";
-import Chat from "./pages/chat";
-import Profile from "./pages/profile";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Button } from './components/ui/button';
+import Auth from './pages/auth';
+import Chat from './pages/chat';
+import Profile from './pages/profile';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
 
-        <Route path="*" element={<Navigate to={"/auth"} />} />
+        <Route path="*" element={<Navigate to={'/auth'} />} />
       </Routes>
     </BrowserRouter>
   );
