@@ -4,15 +4,46 @@ import Victory from '../../assets/victory.svg';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { apiClient } from '@/lib/api-client';
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from '@/utils/constants';
+import { useNavigate } from 'react-router-dom';
+import { validateLogin, validateSignup } from '@/utils/validationAuths';
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    if (validateLogin(email, password)) {
+      const response = await apiClient.post(
+        LOGIN_ROUTE,
+        { email, password },
+        { withCredentials: true }
+      );
+      if (response.data.user.id) {
+        if (response.data.user.profileSetup) {
+          navigate('/chat');
+        } else {
+          navigate('/profile');
+        }
+      }
+    }
+  };
 
-  const handleSignup = async () => {};
+  const handleSignup = async () => {
+    if (validateSignup(email, password, confirmPassword)) {
+      const response = await apiClient.post(
+        SIGNUP_ROUTE,
+        { email, password },
+        { withCredentials: true }
+      );
+      if (response.status === 201) {
+        navigate('/profile');
+      }
+    }
+  };
 
   return (
     <div className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -31,7 +62,7 @@ const Auth = () => {
             </p>
           </div>
           <div className="flex items-center justify-center w-full ">
-            <Tabs className="w-3/4">
+            <Tabs className="w-3/4" defaultValue="login">
               <TabsList className="bg-transparent rounded-none w-full">
                 <TabsTrigger
                   value="login"

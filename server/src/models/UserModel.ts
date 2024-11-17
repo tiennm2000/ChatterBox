@@ -49,4 +49,5 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.models.Users || mongoose.model("Users", userSchema);
+export const User =
+  mongoose.models.Users || mongoose.model("Users", userSchema);
