@@ -8,9 +8,11 @@ import { apiClient } from '@/lib/api-client';
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from '@/utils/constants';
 import { useNavigate } from 'react-router-dom';
 import { validateLogin, validateSignup } from '@/utils/validationAuths';
+import { useAppStore } from '@/store';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const setUserInfo = useAppStore().setUserInfo;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,6 +25,7 @@ const Auth = () => {
         { withCredentials: true }
       );
       if (response.data.user.id) {
+        setUserInfo(response.data.user);
         if (response.data.user.profileSetup) {
           navigate('/chat');
         } else {
@@ -40,6 +43,7 @@ const Auth = () => {
         { withCredentials: true }
       );
       if (response.status === 201) {
+        setUserInfo(response.data.user);
         navigate('/profile');
       }
     }
@@ -61,6 +65,7 @@ const Auth = () => {
               Fill in the details to get started with the Chatter Box
             </p>
           </div>
+
           <div className="flex items-center justify-center w-full ">
             <Tabs className="w-3/4" defaultValue="login">
               <TabsList className="bg-transparent rounded-none w-full">
@@ -118,6 +123,7 @@ const Auth = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
+
                 <Button className="rounded-full p-6" onClick={handleSignup}>
                   Signup
                 </Button>
@@ -125,6 +131,7 @@ const Auth = () => {
             </Tabs>
           </div>
         </div>
+
         <div className="hidden xl:flex items-center justify-center">
           <img src={Background} alt="background-login" className="h-[500px]" />
         </div>
