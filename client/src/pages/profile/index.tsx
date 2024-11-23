@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { colors, getColor } from '@/lib/utils';
 import { useAppStore } from '@/store';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoArrowBack } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus, FaTrash } from 'react-icons/fa';
@@ -9,22 +9,32 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/api-client';
-import { UPDATE_PROFILE_ROUTE } from '@/utils/constants';
+import {
+  ADD_PROFILE_IMAGE_ROUTE,
+  HOST,
+  REMOVE_PROFILE_IMAGE_ROUTE,
+  UPDATE_PROFILE_ROUTE,
+} from '@/utils/constants';
+import { UserInfo } from '@/store/slices/auth-slice';
 
 const Profile = () => {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
   const [selectedColor, setSelectedColor] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (userInfo?.profileSetup) {
       setFirstName(userInfo.firstName!);
       setLastName(userInfo.lastName!);
       setSelectedColor(userInfo.color!);
+    }
+    if (userInfo?.image) {
+      setImage(`${HOST}/${userInfo.image}`);
     }
   }, [userInfo]);
 
@@ -49,7 +59,7 @@ const Profile = () => {
           { firstName, lastName, color: selectedColor },
           { withCredentials: true }
         );
-        console.log(response.data);
+
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data.user });
           console.log(userInfo);
@@ -67,6 +77,52 @@ const Profile = () => {
       navigate('/chat');
     } else {
       toast.error('Please setup profile.');
+    }
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current!.click();
+  };
+
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files![0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('profile-image', file);
+      const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTE, formData, {
+        withCredentials: true,
+      });
+      if (response.status === 200 && response.data) {
+        setUserInfo({ ...userInfo, image: response.data.image } as UserInfo);
+        toast.success('Image updated successfully!');
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setImage(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    try {
+      const response = await apiClient.delete(REMOVE_PROFILE_IMAGE_ROUTE, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        setUserInfo({ ...userInfo, image: undefined } as UserInfo);
+        toast.success('Image remove successfully.');
+        setImage(null);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -103,7 +159,10 @@ const Profile = () => {
               )}
             </Avatar>
             {hovered && (
-              <div className="absolute inset-0 flex items-center justify-center bg-pastel-lavender/50 ring-fuchsia-50 rounded-full">
+              <div
+                className="absolute inset-0 flex items-center justify-center bg-pastel-lavender/50 ring-fuchsia-50 rounded-full"
+                onClick={image ? handleDeleteImage : handleFileInputClick}
+              >
                 {image ? (
                   <FaTrash className="text-white text-3xl cursor-pointer" />
                 ) : (
@@ -111,7 +170,14 @@ const Profile = () => {
                 )}
               </div>
             )}
-            {/* <input type="text" /> */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              className="hidden"
+              name="profile-image"
+              accept="image/*"
+            />
           </div>
           <div className="flex min-w-32 md:min-w-64 flex-col text-black items-center justify-center gap-5">
             <div className="w-full">
