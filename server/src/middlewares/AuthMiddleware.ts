@@ -15,7 +15,10 @@ export const verifyToken: RequestHandler = (
 ) => {
   const token = req.cookies?.jwt;
 
-  if (!token) res.status(401).send("You are not authenticated");
+  if (!token) {
+    res.status(401).send("You are not authenticated");
+    return;
+  }
   jwt.verify(
     token,
     process.env.JWT_KEY!,
@@ -23,7 +26,11 @@ export const verifyToken: RequestHandler = (
       err: VerifyErrors | null,
       payload: string | JwtPayload | undefined
     ) => {
-      if (err) res.status(403).send("Token is not valid!");
+      if (err) {
+        res.status(403).send("Token is not valid!");
+        return;
+      }
+
       const decodePayload = payload as CustomJwtPayload;
       req.userId = decodePayload.userId;
       next();

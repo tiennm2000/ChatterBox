@@ -9,6 +9,7 @@ import { LOGIN_ROUTE, SIGNUP_ROUTE } from '@/utils/constants';
 import { useNavigate } from 'react-router-dom';
 import { validateLogin, validateSignup } from '@/utils/validationAuths';
 import { useAppStore } from '@/store';
+import { AxiosError } from 'axios';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,20 +17,29 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [signupError, setSignupError] = useState('');
 
   const handleLogin = async () => {
     if (validateLogin(email, password)) {
-      const response = await apiClient.post(
-        LOGIN_ROUTE,
-        { email, password },
-        { withCredentials: true }
-      );
-      if (response.data.user.id) {
-        setUserInfo(response.data.user);
-        if (response.data.user.profileSetup) {
-          navigate('/chat');
-        } else {
-          navigate('/profile');
+      try {
+        const response = await apiClient.post(
+          LOGIN_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
+
+        if (response.data.user.id) {
+          setUserInfo(response.data.user);
+          if (response.data.user.profileSetup) {
+            navigate('/chat');
+          } else {
+            navigate('/profile');
+          }
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          setLoginError(error.response?.data);
         }
       }
     }
@@ -37,14 +47,20 @@ const Auth = () => {
 
   const handleSignup = async () => {
     if (validateSignup(email, password, confirmPassword)) {
-      const response = await apiClient.post(
-        SIGNUP_ROUTE,
-        { email, password },
-        { withCredentials: true }
-      );
-      if (response.status === 201) {
-        setUserInfo(response.data.user);
-        navigate('/profile');
+      try {
+        const response = await apiClient.post(
+          SIGNUP_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
+        if (response.status === 201) {
+          setUserInfo(response.data.user);
+          navigate('/profile');
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          setSignupError(error.response?.data);
+        }
       }
     }
   };
@@ -89,6 +105,7 @@ const Auth = () => {
                   className="rounded-full p-6"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setLoginError('')}
                 />
                 <Input
                   placeholder="Password"
@@ -96,7 +113,11 @@ const Auth = () => {
                   className="rounded-full p-6"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setLoginError('')}
                 />
+                {loginError && (
+                  <p className="text-red-500 mt-4">{loginError}</p>
+                )}
                 <Button className="rounded-full p-6" onClick={handleLogin}>
                   Login
                 </Button>
@@ -108,6 +129,7 @@ const Auth = () => {
                   className="rounded-full p-6"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setSignupError('')}
                 />
                 <Input
                   placeholder="Password"
@@ -115,6 +137,7 @@ const Auth = () => {
                   className="rounded-full p-6"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setSignupError('')}
                 />
                 <Input
                   placeholder="Confirm Password"
@@ -122,8 +145,12 @@ const Auth = () => {
                   className="rounded-full p-6"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  onFocus={() => setSignupError('')}
                 />
 
+                {signupError && (
+                  <p className="text-red-500 mt-4">{signupError}</p>
+                )}
                 <Button className="rounded-full p-6" onClick={handleSignup}>
                   Signup
                 </Button>

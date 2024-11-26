@@ -19,10 +19,10 @@ app.use(
   })
 );
 
-app.use("/uploads/profiles", express.static("uploads/profiles"));
-
 app.use(cookieParser());
 app.use(express.json());
+
+app.use("/uploads/profiles", express.static("uploads/profiles"));
 
 app.use("/api/auth", authRoutes);
 

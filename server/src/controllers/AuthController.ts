@@ -11,19 +11,23 @@ const createToken = (email: string, userId: string) => {
   return sign({ email, userId }, process.env.JWT_KEY!, { expiresIn: maxAge });
 };
 
+// Signup handler
 export const signup: RequestHandler = async (request, response) => {
   try {
     const { email, password } = request.body;
     if (!email || !password) {
-      response.status(400).send("Email and Password is Required ");
+      response.status(400).send("Email and Password is Required");
       return;
     }
+
     const user = await User.create({ email, password });
+
     response.cookie("jwt", createToken(email, user.id), {
       maxAge,
       secure: true,
       sameSite: "none",
     });
+
     response.status(201).json({
       user: {
         id: user.id,
@@ -37,26 +41,34 @@ export const signup: RequestHandler = async (request, response) => {
   }
 };
 
+// Login handler
 export const login: RequestHandler = async (request, response) => {
   try {
     const { email, password } = request.body;
     if (!email || !password) {
-      response.status(400).send("Email and Password is Required ");
+      response.status(400).send("Email and Password is Required");
       return;
     }
+
     const user = await User.findOne({ email });
     if (!user) {
       response.status(404).send("User with the given email not found.");
+      return;
     }
+
     const auth = await compare(password, user.password);
+    console.log(user.password);
     if (!auth) {
       response.status(400).send("Password is incorrect");
+      return;
     }
+
     response.cookie("jwt", createToken(email, user.id), {
       maxAge,
       secure: true,
       sameSite: "none",
     });
+
     response.status(200).json({
       user: {
         id: user.id,
@@ -74,6 +86,7 @@ export const login: RequestHandler = async (request, response) => {
   }
 };
 
+// Get user info
 export const getUserInfo: RequestHandler = async (
   request: ExtendedRequest,
   response
@@ -82,7 +95,9 @@ export const getUserInfo: RequestHandler = async (
     const userData = await User.findById(request.userId);
     if (!userData) {
       response.status(404).send("User with the given id not found");
+      return;
     }
+
     response.status(200).json({
       user: {
         id: userData.id,
@@ -100,6 +115,7 @@ export const getUserInfo: RequestHandler = async (
   }
 };
 
+// Update profile
 export const updateProfile: RequestHandler = async (
   request: ExtendedRequest,
   response
@@ -107,8 +123,10 @@ export const updateProfile: RequestHandler = async (
   try {
     const { userId } = request;
     const { firstName, lastName, color } = request.body;
+
     if (!firstName || !lastName) {
-      response.status(400).send("First name and last name is required");
+      response.status(400).send("First name and last name are required");
+      return;
     }
 
     const userData = await User.findByIdAndUpdate(
@@ -116,6 +134,7 @@ export const updateProfile: RequestHandler = async (
       { firstName, lastName, color, profileSetup: true },
       { new: true, runValidators: true }
     );
+
     response.status(200).json({
       user: {
         id: userData.id,
@@ -133,20 +152,21 @@ export const updateProfile: RequestHandler = async (
   }
 };
 
+// Add profile image
 export const addProfileImage: RequestHandler = async (
   request: ExtendedRequest,
   response
 ) => {
   try {
-    if (!request) {
+    if (!request.file) {
       response.status(400).send("File is required.");
+      return;
     }
 
     const date = Date.now();
+    const fileName = "uploads/profiles/" + date + request.file.originalname;
 
-    let fileName = "uploads/profiles/" + date + request.file?.originalname;
-
-    renameSync(request.file?.path!, fileName);
+    renameSync(request.file.path, fileName);
 
     const updatedUser = await User.findByIdAndUpdate(
       request.userId,
@@ -154,15 +174,14 @@ export const addProfileImage: RequestHandler = async (
       { new: true, runValidators: true }
     );
 
-    response.status(200).json({
-      image: updatedUser.image,
-    });
+    response.status(200).json({ image: updatedUser.image });
   } catch (error) {
     console.error({ error });
     response.status(500).send("Internal Server Error");
   }
 };
 
+// Remove profile image
 export const removeProfileImage: RequestHandler = async (
   request: ExtendedRequest,
   response
@@ -173,6 +192,7 @@ export const removeProfileImage: RequestHandler = async (
 
     if (!user) {
       response.status(404).send("User not found.");
+      return;
     }
 
     if (user.image) {
