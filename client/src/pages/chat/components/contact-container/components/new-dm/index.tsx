@@ -19,19 +19,15 @@ import Lottie from 'react-lottie';
 import { apiClient } from '@/lib/api-client';
 import { SEARCH_CONTACTS_ROUTES } from '@/utils/constants';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UserInfo } from '@/store/slices/auth-slice';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { HOST } from '@/utils/constants';
 import { getColor } from '@/lib/utils';
 import { useAppStore } from '@/store';
-
-export interface User extends UserInfo {
-  _id: string;
-}
+import { UserInfo } from '@/utils/types';
 
 const NewDM = () => {
   const [openNewContactModal, setOpenNewContactModal] = useState(false);
-  const [searchedContacts, setSearchedContacts] = useState<User[]>([]);
+  const [searchedContacts, setSearchedContacts] = useState<UserInfo[]>([]);
   const { setSelectedChatType, setSelectedChatData } = useAppStore();
 
   const searchContact = async (searchTerm: string) => {
@@ -54,7 +50,7 @@ const NewDM = () => {
     }
   };
 
-  const selectNewContact = (contact: User) => {
+  const selectNewContact = (contact: UserInfo) => {
     setOpenNewContactModal(false);
     setSearchedContacts([]);
     setSelectedChatData(contact);

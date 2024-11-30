@@ -1,13 +1,13 @@
-import { User } from '@/pages/chat/components/contact-container/components/new-dm';
+import { UserInfo } from '@/utils/types';
 import { StateCreator } from 'zustand';
 
 export interface ChatSlice {
   selectedChatType: string | undefined;
-  selectedChatData: User | undefined;
+  selectedChatData: UserInfo | undefined;
   selectedChatMessage: string[];
   setSelectedChatMessage: (selectedChatMessage: string[]) => void;
   setSelectedChatType: (selectedChatType: string | undefined) => void;
-  setSelectedChatData: (selectedChatData: User | undefined) => void;
+  setSelectedChatData: (selectedChatData: UserInfo | undefined) => void;
   closeChat: () => void;
 }
 

@@ -15,7 +15,7 @@ import {
   REMOVE_PROFILE_IMAGE_ROUTE,
   UPDATE_PROFILE_ROUTE,
 } from '@/utils/constants';
-import { UserInfo } from '@/store/slices/auth-slice';
+import { UserInfo } from '@/utils/types';
 
 const Profile = () => {
   const navigate = useNavigate();
