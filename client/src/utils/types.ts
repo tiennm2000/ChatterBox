@@ -1,5 +1,5 @@
 export interface UserInfo {
-  _id: string;
+  id: string;
   email: string;
   profileSetup: boolean;
   firstName?: string;

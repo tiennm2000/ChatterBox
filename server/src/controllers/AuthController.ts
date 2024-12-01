@@ -57,7 +57,7 @@ export const login: RequestHandler = async (request, response) => {
     }
 
     const auth = await compare(password, user.password);
-    console.log(user.password);
+
     if (!auth) {
       response.status(400).send("Password is incorrect");
       return;
