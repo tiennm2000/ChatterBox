@@ -36,7 +36,7 @@ function App() {
           withCredentials: true,
         });
 
-        if (response.status === 200 && response.data.user.id) {
+        if (response.status === 200 && response.data.user._id) {
           setUserInfo(response.data.user);
         } else {
           setUserInfo(undefined);
