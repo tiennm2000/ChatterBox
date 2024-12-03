@@ -30,7 +30,7 @@ export const signup: RequestHandler = async (request, response) => {
 
     response.status(201).json({
       user: {
-        id: user.id,
+        _id: user._id,
         email: user.email,
         profileSetup: user.profileSetup,
       },
@@ -71,7 +71,7 @@ export const login: RequestHandler = async (request, response) => {
 
     response.status(200).json({
       user: {
-        id: user.id,
+        _id: user._id,
         email: user.email,
         profileSetup: user.profileSetup,
         firstName: user.firstName,
@@ -98,9 +98,10 @@ export const getUserInfo: RequestHandler = async (
       return;
     }
 
+    // console.log(userData);
     response.status(200).json({
       user: {
-        id: userData.id,
+        _id: userData._id,
         email: userData.email,
         profileSetup: userData.profileSetup,
         firstName: userData.firstName,
@@ -137,7 +138,7 @@ export const updateProfile: RequestHandler = async (
 
     response.status(200).json({
       user: {
-        id: userData.id,
+        _id: userData.id,
         email: userData.email,
         profileSetup: userData.profileSetup,
         firstName: userData.firstName,
