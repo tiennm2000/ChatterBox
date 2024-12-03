@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store';
 import { HOST } from '@/utils/constants';
-import { Message, ReceivedMessage } from '@/utils/types';
+import { Message } from '@/utils/types';
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -29,7 +29,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log('Connected to socket server');
       });
 
-      const handleReceiveMessage = (message: ReceivedMessage) => {
+      const handleReceiveMessage = (message: Message) => {
         const { selectedChatData, selectedChatType } = useAppStore.getState();
 
         if (
@@ -37,8 +37,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           (selectedChatData?._id === message.sender._id ||
             selectedChatData?._id === message.recipient?._id)
         ) {
-          console.log('message received', message);
-          //addMessage(message);
+          addMessage(message);
         }
       };
 

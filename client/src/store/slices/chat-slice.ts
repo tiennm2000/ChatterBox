@@ -32,7 +32,7 @@ export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
     }),
   addMessage(message) {
     const selectedChatMessages = get().selectedChatMessages;
-    //const selectedChatType = get().selectedChatType;
+    // const selectedChatType = get().selectedChatType;
 
     set({
       selectedChatMessages: [

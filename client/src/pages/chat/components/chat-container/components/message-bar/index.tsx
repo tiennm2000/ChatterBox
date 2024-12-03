@@ -36,6 +36,7 @@ const MessageBar = () => {
         messageType: 'text',
         fileUrl: undefined,
       });
+      setMessage('');
     }
   };
 
@@ -70,7 +71,7 @@ const MessageBar = () => {
       </div>
       <button
         onClick={handleSendMessage}
-        className="bg-pastel-light-pink rounded-md flex items-center justify-center p-5 hover:bg-pastel-sky-purple focus:bg-pastel-sky-purple focus:border-none focus:outline-none focus:text-white duration-300 transition-all"
+        className="bg-pastel-light-pink rounded-md flex items-center justify-center p-5 hover:bg-pastel-sky-purple  hover:border-none hover:outline-none hover:text-white duration-300 transition-all"
       >
         <IoSend className="text-2xl" />
       </button>
