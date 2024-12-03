@@ -1,31 +1,46 @@
-import { UserInfo } from '@/utils/types';
+import { Message, UserInfo } from '@/utils/types';
 import { StateCreator } from 'zustand';
 
 export interface ChatSlice {
   selectedChatType: string | undefined;
   selectedChatData: UserInfo | undefined;
-  selectedChatMessage: string[];
-  setSelectedChatMessage: (selectedChatMessage: string[]) => void;
+  selectedChatMessages: Message[];
+  setSelectedChatMessages: (selectedChatMessages: Message[]) => void;
   setSelectedChatType: (selectedChatType: string | undefined) => void;
   setSelectedChatData: (selectedChatData: UserInfo | undefined) => void;
   closeChat: () => void;
+  addMessage: (message: Message) => void;
 }
 
-export const createChatSlice: StateCreator<ChatSlice> = (set) => ({
+export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
   selectedChatType: undefined,
   selectedChatData: undefined,
-  selectedChatMessage: [],
+  selectedChatMessages: [],
   setSelectedChatData(selectedChatData) {
     set({ selectedChatData });
   },
   setSelectedChatType(selectedChatType) {
     set({ selectedChatType });
   },
-  setSelectedChatMessage: (selectedChatMessage) => set({ selectedChatMessage }),
+  setSelectedChatMessages: (selectedChatMessages) =>
+    set({ selectedChatMessages }),
   closeChat: () =>
     set({
       selectedChatData: undefined,
       selectedChatType: undefined,
-      selectedChatMessage: [],
+      selectedChatMessages: [],
     }),
+  addMessage(message) {
+    const selectedChatMessages = get().selectedChatMessages;
+    //const selectedChatType = get().selectedChatType;
+
+    set({
+      selectedChatMessages: [
+        ...selectedChatMessages,
+        {
+          ...message,
+        },
+      ],
+    });
+  },
 });
