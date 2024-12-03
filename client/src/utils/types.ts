@@ -1,5 +1,5 @@
 export interface UserInfo {
-  id: string;
+  _id: string;
   email: string;
   profileSetup: boolean;
   firstName?: string;
@@ -9,7 +9,17 @@ export interface UserInfo {
 }
 
 export interface Message {
-  id: string;
+  _id: string;
+  sender: string;
+  recipient?: string;
+  messageType: 'text' | 'file';
+  content?: string;
+  fileUrl?: string;
+  timestamp: Date;
+}
+
+export interface ReceivedMessage {
+  _id: string;
   sender: UserInfo;
   recipient?: UserInfo;
   messageType: 'text' | 'file';
