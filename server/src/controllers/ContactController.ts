@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import { User } from "../models/UserModel";
 import { ExtendedRequest } from "../middlewares/AuthMiddleware";
+import mongoose from "mongoose";
+import Message from "../models/MessagesModel";
 
 interface SearchRequestBody {
   searchTerm: string;
@@ -30,6 +32,70 @@ export const searchContacts: RequestHandler = async (
         { $or: [{ firstName: regex }, { lastName: regex }, { email: regex }] },
       ],
     });
+
+    response.status(200).json({ contacts });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send("Internal Server Error.");
+  }
+};
+
+export const getContactsForDMList: RequestHandler = async (
+  request: ExtendedRequest,
+  response
+) => {
+  try {
+    const { userId } = request;
+    let user = new mongoose.Types.ObjectId(userId);
+    const contacts = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: user }, { recipient: user }],
+        },
+      },
+      {
+        $sort: { timestamp: -1 },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: {
+                $eq: ["sender", user],
+              },
+              then: "$recipient",
+              else: "$sender",
+            },
+          },
+          lastMessageTime: { $first: "$timestamp" },
+        },
+      },
+      {
+        $lookup: {
+          from: "$user",
+          localField: "_id",
+          foreignField: "_id",
+          as: "contactInfo",
+        },
+      },
+      {
+        $unwind: "$contactInfo",
+      },
+      {
+        $project: {
+          _id: 1,
+          lastMessageTime: 1,
+          email: "$contactInfo.email",
+          firstName: "$contactInfo.firstName",
+          lastName: "$contactInfo.lastName",
+          image: "$contactInfo.image",
+          color: "$contactInfo.color",
+        },
+      },
+      {
+        $sort: { lastMessageTime: -1 },
+      },
+    ]);
 
     response.status(200).json({ contacts });
   } catch (error) {
