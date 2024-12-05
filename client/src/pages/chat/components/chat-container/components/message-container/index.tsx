@@ -73,7 +73,17 @@ const MessageContainer = () => {
   };
 
   const downloadFile = async (fileUrl: string) => {
-    const response = await apiClient.get(`${HOST}/{fileUrl}`);
+    const response = await apiClient.get(`${HOST}/${fileUrl}`, {
+      responseType: 'blob',
+    });
+    const urlBlog = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = urlBlog;
+    link.setAttribute('download', fileUrl.split('/').pop()!);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(urlBlog);
   };
 
   const renderDMMessages = (message: Message) => (
@@ -119,7 +129,7 @@ const MessageContainer = () => {
               <span>{message.fileUrl?.split('/').pop()}</span>
               <span
                 className="bg-black/20 p-3 text-2xl rounded-full cursor-pointer hover:bg-black/50 transition-all duration-300"
-                onClick={() => downloadFile(message.fileUrl)}
+                onClick={() => downloadFile(message.fileUrl!)}
               >
                 <IoMdArrowRoundDown />
               </span>
