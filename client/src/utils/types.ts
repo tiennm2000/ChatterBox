@@ -17,3 +17,7 @@ export interface Message {
   fileUrl?: string;
   timestamp: Date;
 }
+
+export interface Contact extends UserInfo {
+  lastMessageTime: Date;
+}
