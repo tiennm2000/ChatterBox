@@ -61,7 +61,7 @@ export const getContactsForDMList: RequestHandler = async (
           _id: {
             $cond: {
               if: {
-                $eq: ["sender", user],
+                $eq: ["$sender", user],
               },
               then: "$recipient",
               else: "$sender",
@@ -72,7 +72,7 @@ export const getContactsForDMList: RequestHandler = async (
       },
       {
         $lookup: {
-          from: "$user",
+          from: "users",
           localField: "_id",
           foreignField: "_id",
           as: "contactInfo",
