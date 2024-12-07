@@ -14,6 +14,14 @@ export interface ChatSlice {
   addMessage: (message: Message) => void;
   directMessageContacts: Contact[];
   setDirectMessageContacts: (directMessageContacts: Contact[]) => void;
+  isUploading: boolean;
+  isDownloading: boolean;
+  fileUploadProgress: number;
+  fileDownloadProgress: number;
+  setIsUploading: (isUploading: boolean) => void;
+  setIsDownloading: (isDownloading: boolean) => void;
+  setFileUploadProgress: (fileUploadProgress: number) => void;
+  setFileDownloadProgress: (fileDownloadProgress: number) => void;
 }
 
 export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
@@ -21,6 +29,22 @@ export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
   selectedChatData: undefined,
   selectedChatMessages: [],
   directMessageContacts: [],
+  isUploading: false,
+  isDownloading: false,
+  fileUploadProgress: 0,
+  fileDownloadProgress: 0,
+  setIsUploading(isUploading) {
+    set({ isUploading });
+  },
+  setIsDownloading(isDownloading) {
+    set({ isDownloading });
+  },
+  setFileUploadProgress(fileUploadProgress) {
+    set({ fileUploadProgress });
+  },
+  setFileDownloadProgress(fileDownloadProgress) {
+    set({ fileDownloadProgress });
+  },
   setSelectedChatData(selectedChatData) {
     set({ selectedChatData });
   },
