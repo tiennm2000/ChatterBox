@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { RequestHandler, response } from "express";
 import { User } from "../models/UserModel";
 import { ExtendedRequest } from "../middlewares/AuthMiddleware";
 import mongoose from "mongoose";
@@ -96,6 +96,27 @@ export const getContactsForDMList: RequestHandler = async (
         $sort: { lastMessageTime: -1 },
       },
     ]);
+
+    response.status(200).json({ contacts });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send("Internal Server Error.");
+  }
+};
+
+export const getAllContacts: RequestHandler = async (
+  request: ExtendedRequest,
+  response
+) => {
+  try {
+    const users = await User.find(
+      { _id: { $ne: request.userId } },
+      "firstName lastName _id"
+    );
+
+    const contacts = users.map((user) => ({
+      label: user.firstName ? `${user.firstName} ${user.lastName}` : user.email,
+    }));
 
     response.status(200).json({ contacts });
   } catch (error) {
