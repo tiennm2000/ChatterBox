@@ -1,3 +1,5 @@
+import { Option } from '@/components/ui/multipleselect';
+
 export interface UserInfo {
   _id: string;
   email: string;
@@ -20,4 +22,9 @@ export interface Message {
 
 export interface Contact extends UserInfo {
   lastMessageTime: Date;
+}
+
+export interface UserGroupChannel extends Option {
+  label: string;
+  value: string;
 }
