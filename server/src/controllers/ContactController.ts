@@ -116,6 +116,7 @@ export const getAllContacts: RequestHandler = async (
 
     const contacts = users.map((user) => ({
       label: user.firstName ? `${user.firstName} ${user.lastName}` : user.email,
+      value: user._id,
     }));
 
     response.status(200).json({ contacts });
