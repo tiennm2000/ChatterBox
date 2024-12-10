@@ -1,6 +1,6 @@
 import { Option } from '@/components/ui/multipleselect';
 
-export interface UserInfo {
+export interface UserInfo extends TypeChat {
   _id: string;
   email: string;
   profileSetup: boolean;
@@ -27,4 +27,15 @@ export interface Contact extends UserInfo {
 export interface UserGroupChannel extends Option {
   label: string;
   value: string;
+}
+
+export interface Channel extends TypeChat {
+  _id: string;
+  name: string;
+  members: UserInfo[];
+  admin: UserInfo;
+}
+
+export interface TypeChat {
+  type: 'channel' | 'contact';
 }
