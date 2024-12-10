@@ -1,30 +1,20 @@
 import { useAppStore } from '@/store';
-import { Contact } from '@/utils/types';
+import { UserInfo } from '@/utils/types';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { HOST } from '@/utils/constants';
 import { getColor } from '@/lib/utils';
 
 interface ContactListProps {
-  contacts: Contact[];
-  isChannel?: boolean;
+  contacts: Array<UserInfo>;
 }
 
-const ContactList = ({ contacts, isChannel = false }: ContactListProps) => {
-  const {
-    selectedChatData,
-    selectedChatType,
-    setSelectedChatData,
-    setSelectedChatType,
-    setSelectedChatMessages,
-  } = useAppStore();
+const ContactList = ({ contacts }: ContactListProps) => {
+  let { selectedChatData, setSelectedChatData, setSelectedChatMessages } =
+    useAppStore();
 
-  const handleClick = (contact: Contact) => {
-    if (isChannel) {
-      setSelectedChatType('channel');
-    } else {
-      setSelectedChatType('contact');
-    }
+  selectedChatData = selectedChatData as UserInfo;
 
+  const handleClick = (contact: UserInfo) => {
     setSelectedChatData(contact);
 
     if (selectedChatData && selectedChatData._id !== contact._id) {
@@ -42,7 +32,7 @@ const ContactList = ({ contacts, isChannel = false }: ContactListProps) => {
           onClick={() => handleClick(contact)}
         >
           <div className="flex gap-5 items-center justify-start text-black">
-            {!isChannel && (
+            {
               <Avatar className="h-10 w-10 rounded-full overflow-hidden">
                 {contact?.image ? (
                   <AvatarImage
@@ -52,7 +42,7 @@ const ContactList = ({ contacts, isChannel = false }: ContactListProps) => {
                   />
                 ) : (
                   <div
-                    className={`uppercase h-10 w-10 text-lg border  flex items-center justify-center rounded-full ${selectedChatData?._id === contact._id ? 'bg-pastel-peach border-2 border-white' : getColor(contact?.color!)}`}
+                    className={`uppercase h-10 w-10 text-lg border flex items-center justify-center rounded-full ${selectedChatData?._id === contact._id ? 'bg-pastel-peach border-2 border-white' : getColor(contact?.color!)}`}
                   >
                     {contact?.firstName
                       ? contact?.firstName.split('').shift()
@@ -60,19 +50,11 @@ const ContactList = ({ contacts, isChannel = false }: ContactListProps) => {
                   </div>
                 )}
               </Avatar>
-            )}
-            {isChannel && (
-              <div className="bg-pastel-salmon h-10 w-10 flex items-center justify-center rounded-full">
-                #
-              </div>
-            )}
-            {isChannel ? (
-              <span>{contact._id}</span>
-            ) : (
-              <span>
-                {contact.firstName} {contact.lastName}
-              </span>
-            )}
+            }
+
+            <span>
+              {contact.firstName} {contact.lastName}
+            </span>
           </div>
         </div>
       ))}
