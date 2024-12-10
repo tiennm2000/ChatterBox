@@ -15,13 +15,18 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { apiClient } from '@/lib/api-client';
-import { GET_ALL_CONTACTS_ROUTES } from '@/utils/constants';
+import {
+  CREATE_CHANNEL_ROUTES,
+  GET_ALL_CONTACTS_ROUTES,
+} from '@/utils/constants';
 import { Button } from '@/components/ui/button';
 import MultipleSelector from '@/components/ui/multipleselect';
 import { UserGroupChannel } from '@/utils/types';
+import { useAppStore } from '@/store';
 
 const CreateChannel = () => {
   const [newChannelModal, setNewChannelModal] = useState(false);
+  const { addChannel } = useAppStore();
 
   const [allContacts, setAllContacts] = useState<UserGroupChannel[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<UserGroupChannel[]>(
@@ -41,7 +46,30 @@ const CreateChannel = () => {
     getData();
   }, []);
 
-  const createChannel = async () => {};
+  const createChannel = async () => {
+    try {
+      if (channelName.length > 0 && selectedContacts.length > 0) {
+        const response = await apiClient.post(
+          CREATE_CHANNEL_ROUTES,
+          {
+            name: channelName,
+            members: selectedContacts.map((contact) => contact.value),
+          },
+          { withCredentials: true }
+        );
+
+        if (response.status === 201) {
+          setChannelName('');
+          setAllContacts([]);
+          setSelectedContacts([]);
+          setNewChannelModal(false);
+          addChannel(response.data.channel);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
