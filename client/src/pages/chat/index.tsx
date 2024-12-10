@@ -9,11 +9,11 @@ import EmptyChatContainer from './components/empty-chat-container';
 const Chat = () => {
   const {
     userInfo,
-    selectedChatType,
     isUploading,
     isDownloading,
     fileUploadProgress,
     fileDownloadProgress,
+    selectedChatData,
   } = useAppStore();
 
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const Chat = () => {
         </div>
       )}
       <ContactContainer />
-      {selectedChatType === undefined ? (
+      {selectedChatData === undefined ? (
         <EmptyChatContainer />
       ) : (
         <ChatContainer />

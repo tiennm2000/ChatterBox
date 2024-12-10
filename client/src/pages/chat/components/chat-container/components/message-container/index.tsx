@@ -1,7 +1,7 @@
 import { useAppStore } from '@/store';
 import { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
-import { Message } from '@/utils/types';
+import { Message, UserInfo } from '@/utils/types';
 import { apiClient } from '@/lib/api-client';
 import { GET_ALL_MESSAGES_ROUTE, HOST } from '@/utils/constants';
 import { MdFolderZip } from 'react-icons/md';
@@ -11,8 +11,7 @@ import { IoCloseSharp } from 'react-icons/io5';
 const MessageContainer = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const {
-    selectedChatType,
+  let {
     selectedChatData,
     selectedChatMessages,
     setSelectedChatMessages,
@@ -22,13 +21,14 @@ const MessageContainer = () => {
 
   const [showImage, setShowImage] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  selectedChatData = selectedChatData as UserInfo;
 
   useEffect(() => {
     const getMessages = async () => {
       try {
         const response = await apiClient.post(
           GET_ALL_MESSAGES_ROUTE,
-          { id: selectedChatData?._id },
+          { id: selectedChatData._id },
           { withCredentials: true }
         );
 
@@ -40,12 +40,10 @@ const MessageContainer = () => {
       }
     };
 
-    if (selectedChatData?._id) {
-      if (selectedChatType === 'contact') {
-        getMessages();
-      }
+    if (selectedChatData._id) {
+      getMessages();
     }
-  }, [selectedChatType, selectedChatData, setSelectedChatMessages]);
+  }, [selectedChatData, setSelectedChatMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -66,7 +64,7 @@ const MessageContainer = () => {
               {moment(message.timestamp).format('LL')}
             </div>
           )}
-          {selectedChatType === 'contact' && renderDMMessages(message)}
+          {renderDMMessages(message)}
         </div>
       );
     });
@@ -104,15 +102,13 @@ const MessageContainer = () => {
   const renderDMMessages = (message: Message) => (
     <div
       className={
-        message.sender._id === selectedChatData?._id
-          ? 'text-left'
-          : 'text-right'
+        message.sender._id === selectedChatData._id ? 'text-left' : 'text-right'
       }
     >
       {message.messageType === 'text' && (
         <div
           className={`${
-            message.sender._id !== selectedChatData?._id
+            message.sender._id !== selectedChatData._id
               ? 'bg-pastel-light-pink border-blue-600/50'
               : 'bg-pastel-sky-purple border-black/50'
           } border inline-block p-4 rounded-xl my-1 max-w-[50%] break-words`}
@@ -123,7 +119,7 @@ const MessageContainer = () => {
       {message.messageType === 'file' && (
         <div
           className={`${
-            message.sender._id !== selectedChatData?._id
+            message.sender._id !== selectedChatData._id
               ? 'bg-pastel-light-pink border-blue-600/50'
               : 'bg-pastel-sky-purple border-black/50'
           } border inline-block p-4 rounded-xl my-1 max-w-[50%] break-words`}

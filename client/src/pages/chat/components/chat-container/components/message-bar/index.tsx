@@ -7,18 +7,16 @@ import { useAppStore } from '@/store';
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/api-client';
 import { UPLOAD_FILE_ROUTE } from '@/utils/constants';
+import { UserInfo } from '@/utils/types';
 
 const MessageBar = () => {
   const emojiRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const {
-    selectedChatType,
-    selectedChatData,
-    userInfo,
-    setIsUploading,
-    setFileUploadProgress,
-  } = useAppStore();
+  let { selectedChatData, userInfo, setIsUploading, setFileUploadProgress } =
+    useAppStore();
   const socket = useSocket();
+  selectedChatData = selectedChatData as UserInfo;
+  console.log(selectedChatData.type);
 
   const handleAddEmoji = (emojiObject: { emoji: string }) => {
     setMessage((msg: string) => msg + emojiObject.emoji);
@@ -37,7 +35,7 @@ const MessageBar = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   const handleSendMessage = async () => {
-    if (selectedChatType === 'contact') {
+    if (selectedChatData?.type === 'contact') {
       socket?.emit('sendMessage', {
         sender: userInfo?._id,
         content: message,
@@ -75,7 +73,7 @@ const MessageBar = () => {
         });
         if (response.status === 200 && response.data) {
           setIsUploading(false);
-          if (selectedChatType === 'contact') {
+          if (selectedChatData?.type === 'contact') {
             socket?.emit('sendMessage', {
               sender: userInfo?._id,
               content: undefined,
