@@ -33,12 +33,7 @@ export const searchContacts: RequestHandler = async (
       ],
     });
 
-    const contactsWithType = contacts.map((contact) => ({
-      ...contact.toObject(), // Convert mongoose document to plain object
-      type: "contact", // Add the 'type' property
-    }));
-
-    response.status(200).json({ contacts: contactsWithType });
+    response.status(200).json({ contacts });
   } catch (error) {
     console.error(error);
     response.status(500).send("Internal Server Error.");
@@ -95,7 +90,6 @@ export const getContactsForDMList: RequestHandler = async (
           lastName: "$contactInfo.lastName",
           image: "$contactInfo.image",
           color: "$contactInfo.color",
-          type: "contact",
         },
       },
       {
