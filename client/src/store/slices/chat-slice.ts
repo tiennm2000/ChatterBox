@@ -1,4 +1,10 @@
-import { Channel, Contact, Message, UserInfo } from '@/utils/types';
+import {
+  Channel,
+  ChannelMessage,
+  Contact,
+  Message,
+  UserInfo,
+} from '@/utils/types';
 
 import { StateCreator } from 'zustand';
 
@@ -26,6 +32,8 @@ export interface ChatSlice {
   channels: Channel[];
   setChannels: (channels: Channel[]) => void;
   addChannel: (channel: Channel) => void;
+  addChannelInChannelList: (message: ChannelMessage) => void;
+  addContactsInDMContacts: (message: Message, user: UserInfo) => void;
 }
 
 export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
@@ -87,5 +95,34 @@ export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
         },
       ],
     });
+  },
+  addChannelInChannelList(message) {
+    const channels = get().channels;
+    const data = channels.find((channel) => channel._id === message.channelId);
+    const index = channels.findIndex(
+      (channel) => channel._id === message.channelId
+    );
+    if (index !== -1 && index !== undefined) {
+      channels.splice(index, 1);
+      channels.unshift(data!);
+    }
+  },
+  addContactsInDMContacts(message, user) {
+    const userId = user._id;
+    const fromId =
+      message.sender._id === userId
+        ? message.recipient?._id
+        : message.sender._id;
+
+    const dmContacts = get().directMessageContacts;
+    const data = dmContacts.find((contact) => contact._id === fromId);
+    const index = dmContacts.findIndex((contact) => contact._id === fromId);
+    if (index !== -1 && index !== undefined) {
+      dmContacts.splice(index, 1);
+      dmContacts.unshift(data!);
+    } else {
+      dmContacts.unshift(data!);
+    }
+    set({ directMessageContacts: dmContacts });
   },
 });

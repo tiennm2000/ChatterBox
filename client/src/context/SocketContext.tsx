@@ -16,7 +16,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const socket = useRef<Socket | null>(null);
-  const { userInfo, addMessage } = useAppStore();
+  const {
+    userInfo,
+    addMessage,
+    addChannelInChannelList,
+    addContactsInDMContacts,
+  } = useAppStore();
 
   useEffect(() => {
     if (userInfo) {
@@ -38,6 +43,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
             selectedChatData?._id === message.recipient?._id)
         ) {
           addMessage(message);
+          addContactsInDMContacts(message, userInfo);
         }
       };
 
@@ -49,8 +55,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           selectedChatType !== undefined &&
           selectedChatChannel?._id === message.channelId
         ) {
-          console.log(message);
           addMessage(message);
+          addChannelInChannelList(message);
         }
       };
 
