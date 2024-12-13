@@ -3,12 +3,14 @@ import { Channel, Contact, Message, UserInfo } from '@/utils/types';
 import { StateCreator } from 'zustand';
 
 export interface ChatSlice {
-  selectedChatData: UserInfo | Channel | undefined;
+  selectedChatData: UserInfo | undefined;
+  selectedChatType: 'contact' | 'channel' | undefined;
+  selectedChatChannel: Channel | undefined;
+  setSelectedChatChannel: (selectedChatChannel: Channel | undefined) => void;
+  setSelectedChatType: (selectedChatType: 'contact' | 'channel') => void;
   selectedChatMessages: Message[];
   setSelectedChatMessages: (selectedChatMessages: Message[]) => void;
-  setSelectedChatData: (
-    selectedChatData: UserInfo | Channel | undefined
-  ) => void;
+  setSelectedChatData: (selectedChatData: UserInfo | undefined) => void;
   closeChat: () => void;
   addMessage: (message: Message) => void;
   directMessageContacts: Contact[];
@@ -28,6 +30,8 @@ export interface ChatSlice {
 
 export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
   selectedChatData: undefined,
+  selectedChatType: undefined,
+  selectedChatChannel: undefined,
   selectedChatMessages: [],
   directMessageContacts: [],
   isUploading: false,
@@ -35,6 +39,12 @@ export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
   fileUploadProgress: 0,
   fileDownloadProgress: 0,
   channels: [],
+  setSelectedChatType(selectedChatType) {
+    set({ selectedChatType });
+  },
+  setSelectedChatChannel(selectedChatChannel) {
+    set({ selectedChatChannel });
+  },
   setChannels: (channels) => set({ channels }),
   setIsUploading(isUploading) {
     set({ isUploading });
@@ -64,7 +74,7 @@ export const createChatSlice: StateCreator<ChatSlice> = (set, get) => ({
   closeChat: () =>
     set({
       selectedChatData: undefined,
-
+      selectedChatChannel: undefined,
       selectedChatMessages: [],
     }),
   addMessage(message) {
