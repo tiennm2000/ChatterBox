@@ -28,7 +28,7 @@ import { UserInfo } from '@/utils/types';
 const NewDM = () => {
   const [openNewContactModal, setOpenNewContactModal] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState<UserInfo[]>([]);
-  const { setSelectedChatData } = useAppStore();
+  const { setSelectedChatData, setSelectedChatType } = useAppStore();
 
   const searchContact = async (searchTerm: string) => {
     try {
@@ -54,6 +54,7 @@ const NewDM = () => {
     setOpenNewContactModal(false);
     setSearchedContacts([]);
     setSelectedChatData(contact);
+    setSelectedChatType('contact');
   };
 
   return (

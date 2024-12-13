@@ -2,37 +2,52 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { getColor } from '@/lib/utils';
 import { useAppStore } from '@/store';
 import { HOST } from '@/utils/constants';
-import { UserInfo } from '@/utils/types';
+
 import { RiCloseFill } from 'react-icons/ri';
 
 const ChatHeader = () => {
-  let { closeChat, selectedChatData } = useAppStore();
-  selectedChatData = selectedChatData as UserInfo;
+  const { closeChat, selectedChatData, selectedChatChannel, selectedChatType } =
+    useAppStore();
+
   return (
-    <div className="h-[10vh] border-b-2 border-pastel-light-pink flex items-center justify-between px-20 ">
-      <div className="flex gap-5 items-center w-full justify-between ">
+    <div className="h-[10vh] border-b-2 border-pastel-light-pink flex items-center justify-between px-20">
+      <div className="flex gap-5 items-center w-full justify-between">
         <div className="flex gap-3 items-center justify-center">
           <div className="h-12 w-12 relative">
-            <Avatar className="h-12 w-12  rounded-full overflow-hidden">
-              {selectedChatData.image ? (
-                <AvatarImage
-                  src={`${HOST}/${selectedChatData.image}`}
-                  alt="profile"
-                  className="object-cover h-full w-full bg-pastel-sky-purple"
-                />
-              ) : (
+            {selectedChatType === 'contact' && (
+              <Avatar className="h-12 w-12 rounded-full overflow-hidden">
+                {selectedChatData?.image ? (
+                  <AvatarImage
+                    src={`${HOST}/${selectedChatData?.image}`}
+                    alt="profile"
+                    className="object-cover h-full w-full bg-pastel-sky-purple"
+                  />
+                ) : (
+                  <div
+                    className={`uppercase h-12 w-12 text-lg border flex items-center justify-center rounded-full ${getColor(selectedChatData?.color!)}`}
+                  >
+                    {selectedChatData?.firstName
+                      ? selectedChatData?.firstName?.split('').shift()
+                      : selectedChatData?.email.split('').shift()}
+                  </div>
+                )}
+              </Avatar>
+            )}
+            {selectedChatType === 'channel' && (
+              <Avatar className="h-10 w-10 rounded-full overflow-hidden">
                 <div
-                  className={`uppercase h-12 w-12 text-lg border  flex items-center justify-center rounded-full ${getColor(selectedChatData?.color!)}`}
+                  className={`uppercase h-10 w-10 text-lg border flex items-center justify-center rounded-full bg-gray-500 border-gray-400 text-white`}
                 >
-                  {selectedChatData?.firstName
-                    ? selectedChatData?.firstName.split('').shift()
-                    : selectedChatData?.type === 'contact' &&
-                      selectedChatData?.email.split('').shift()}
+                  #
                 </div>
-              )}
-            </Avatar>
+              </Avatar>
+            )}
           </div>
-          {`${selectedChatData?.firstName} ${selectedChatData?.lastName}`}
+          <div className="text-lg font-medium">
+            {selectedChatType === 'channel' && selectedChatChannel?.name}
+            {selectedChatType === 'contact' &&
+              `${selectedChatData!.firstName} ${selectedChatData!.lastName}`}
+          </div>
         </div>
 
         <div className="flex items-center justify-center gap-5">

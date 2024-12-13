@@ -14,6 +14,7 @@ const Chat = () => {
     fileUploadProgress,
     fileDownloadProgress,
     selectedChatData,
+    selectedChatChannel,
   } = useAppStore();
 
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Chat = () => {
         </div>
       )}
       <ContactContainer />
-      {selectedChatData === undefined ? (
+      {selectedChatData === undefined && selectedChatChannel === undefined ? (
         <EmptyChatContainer />
       ) : (
         <ChatContainer />

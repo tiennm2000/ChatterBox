@@ -7,16 +7,19 @@ import { useAppStore } from '@/store';
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/api-client';
 import { UPLOAD_FILE_ROUTE } from '@/utils/constants';
-import { UserInfo } from '@/utils/types';
 
 const MessageBar = () => {
   const emojiRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  let { selectedChatData, userInfo, setIsUploading, setFileUploadProgress } =
-    useAppStore();
+  let {
+    selectedChatData,
+    userInfo,
+    setIsUploading,
+    setFileUploadProgress,
+    selectedChatType,
+    selectedChatChannel,
+  } = useAppStore();
   const socket = useSocket();
-  selectedChatData = selectedChatData as UserInfo;
-  console.log(selectedChatData.type);
 
   const handleAddEmoji = (emojiObject: { emoji: string }) => {
     setMessage((msg: string) => msg + emojiObject.emoji);
@@ -35,7 +38,7 @@ const MessageBar = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   const handleSendMessage = async () => {
-    if (selectedChatData?.type === 'contact') {
+    if (selectedChatType === 'contact') {
       socket?.emit('sendMessage', {
         sender: userInfo?._id,
         content: message,
@@ -43,8 +46,16 @@ const MessageBar = () => {
         messageType: 'text',
         fileUrl: undefined,
       });
-      setMessage('');
+    } else if (selectedChatType === 'channel') {
+      socket?.emit('send-channel-message', {
+        sender: userInfo?._id,
+        content: message,
+        messageType: 'text',
+        fileUrl: undefined,
+        channelId: selectedChatChannel?._id,
+      });
     }
+    setMessage('');
   };
 
   const handleAttachmentClick = () => {
@@ -73,7 +84,7 @@ const MessageBar = () => {
         });
         if (response.status === 200 && response.data) {
           setIsUploading(false);
-          if (selectedChatData?.type === 'contact') {
+          if (selectedChatType === 'contact') {
             socket?.emit('sendMessage', {
               sender: userInfo?._id,
               content: undefined,
@@ -81,10 +92,17 @@ const MessageBar = () => {
               messageType: 'file',
               fileUrl: response.data.filePath,
             });
+          } else if (selectedChatType === 'channel') {
+            socket?.emit('send-channel-message', {
+              sender: userInfo?._id,
+              content: undefined,
+              messageType: 'file',
+              fileUrl: response.data.filePath,
+              channelId: selectedChatChannel?._id,
+            });
           }
         }
       }
-      console.log(file);
     } catch (error) {
       setIsUploading(false);
       console.error(error);

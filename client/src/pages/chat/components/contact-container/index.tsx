@@ -12,8 +12,12 @@ import CreateChannel from './components/create-channel';
 import ChannelList from '@/components/channel-list';
 
 const ContactContainer = () => {
-  const { setDirectMessageContacts, directMessageContacts, setChannels } =
-    useAppStore();
+  const {
+    setDirectMessageContacts,
+    directMessageContacts,
+    setChannels,
+    channels,
+  } = useAppStore();
 
   useEffect(() => {
     const getContacts = async () => {
@@ -50,7 +54,7 @@ const ContactContainer = () => {
           <NewDM />
         </div>
         <div className="max-h-[38vh] overflow-y-auto scrollbar-hide">
-          <ContactList contacts={directMessageContacts} />
+          <ContactList />
         </div>
       </div>
       <div className="my-5">

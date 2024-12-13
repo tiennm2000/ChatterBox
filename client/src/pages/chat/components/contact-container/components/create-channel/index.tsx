@@ -39,7 +39,7 @@ const CreateChannel = () => {
       const response = await apiClient.get(GET_ALL_CONTACTS_ROUTES, {
         withCredentials: true,
       });
-      console.log(response.data.contacts);
+
       setAllContacts(response.data.contacts);
     };
 
@@ -117,7 +117,7 @@ const CreateChannel = () => {
               }
             />
           </div>
-          <div>
+          <div className="flex-1">
             <Button
               className="w-full bg-pastel-salmon hover:bg-pastel-sky-purple transition-all duration-300"
               onClick={createChannel}

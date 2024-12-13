@@ -1,21 +1,21 @@
 import { useAppStore } from '@/store';
-import { UserInfo } from '@/utils/types';
+import { Contact } from '@/utils/types';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { HOST } from '@/utils/constants';
 import { getColor } from '@/lib/utils';
 
-interface ContactListProps {
-  contacts: Array<UserInfo>;
-}
+const ContactList = () => {
+  let {
+    selectedChatData,
+    setSelectedChatData,
+    setSelectedChatMessages,
+    directMessageContacts,
+    setSelectedChatType,
+  } = useAppStore();
 
-const ContactList = ({ contacts }: ContactListProps) => {
-  let { selectedChatData, setSelectedChatData, setSelectedChatMessages } =
-    useAppStore();
-
-  selectedChatData = selectedChatData as UserInfo;
-
-  const handleClick = (contact: UserInfo) => {
+  const handleClick = (contact: Contact) => {
     setSelectedChatData(contact);
+    setSelectedChatType('contact');
 
     if (selectedChatData && selectedChatData._id !== contact._id) {
       setSelectedChatMessages([]);
@@ -24,7 +24,7 @@ const ContactList = ({ contacts }: ContactListProps) => {
 
   return (
     <div className="mt-5">
-      {contacts.map((contact) => (
+      {directMessageContacts.map((contact) => (
         <div
           key={contact._id}
           className={`pl-10 py-2 transition-all duration-300 cursor-pointer 
@@ -46,7 +46,7 @@ const ContactList = ({ contacts }: ContactListProps) => {
                   >
                     {contact?.firstName
                       ? contact?.firstName.split('').shift()
-                      : contact?.email.split('').shift()}
+                      : contact?.email?.split('').shift()}
                   </div>
                 )}
               </Avatar>
