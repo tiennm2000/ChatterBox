@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store';
 import { HOST } from '@/utils/constants';
-import { Message, UserInfo } from '@/utils/types';
+import { ChannelMessage, Message } from '@/utils/types';
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -31,7 +31,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const handleReceiveMessage = (message: Message) => {
         let { selectedChatData } = useAppStore.getState();
-        selectedChatData = selectedChatData as UserInfo;
 
         if (
           selectedChatData !== undefined &&
@@ -42,7 +41,21 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       };
 
+      const handleReceiveChannelMessage = (message: ChannelMessage) => {
+        const { selectedChatChannel, selectedChatType } =
+          useAppStore.getState();
+
+        if (
+          selectedChatType !== undefined &&
+          selectedChatChannel?._id === message.channelId
+        ) {
+          console.log(message);
+          addMessage(message);
+        }
+      };
+
       socket.current.on('receiveMessage', handleReceiveMessage);
+      socket.current.on('receive-channel-message', handleReceiveChannelMessage);
 
       return () => {
         if (socket.current) {
