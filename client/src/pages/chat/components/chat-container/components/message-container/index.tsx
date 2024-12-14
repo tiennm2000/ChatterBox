@@ -18,7 +18,7 @@ import { AvatarFallback } from '@/components/ui/avatar';
 const MessageContainer = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  let {
+  const {
     userInfo,
     selectedChatData,
     selectedChatMessages,
@@ -29,7 +29,6 @@ const MessageContainer = () => {
     selectedChatChannel,
   } = useAppStore.getState();
 
-  console.log(selectedChatMessages);
   const [showImage, setShowImage] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
 
@@ -85,7 +84,6 @@ const MessageContainer = () => {
   const renderMessages = () => {
     let lastDate: null | string = null;
     return selectedChatMessages.map((message) => {
-      console.log(message);
       const messageDate = moment(message.timestamp).format('YYYY-MM-DD');
       const showDate = messageDate !== lastDate;
       lastDate = messageDate;
@@ -135,9 +133,7 @@ const MessageContainer = () => {
   const renderDMMessages = (message: Message) => (
     <div
       className={
-        message.sender._id === selectedChatData!._id
-          ? 'text-left'
-          : 'text-right'
+        message.sender._id !== userInfo?._id ? 'text-left' : 'text-right'
       }
     >
       {message.messageType === 'text' && (

@@ -16,7 +16,10 @@ export const getMessages: RequestHandler = async (
         { sender: user1, recipient: user2 },
         { sender: user2, recipient: user1 },
       ],
-    }).sort({ timestamp: 1 });
+    })
+      .populate("sender", "_id")
+      .populate("recipient", "_id")
+      .sort({ timestamp: 1 });
 
     response.status(200).json({ messages });
   } catch (error) {
