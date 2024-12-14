@@ -12,12 +12,7 @@ import CreateChannel from './components/create-channel';
 import ChannelList from '@/components/channel-list';
 
 const ContactContainer = () => {
-  const {
-    setDirectMessageContacts,
-    directMessageContacts,
-    setChannels,
-    channels,
-  } = useAppStore();
+  const { setDirectMessageContacts, setChannels } = useAppStore();
 
   useEffect(() => {
     const getContacts = async () => {

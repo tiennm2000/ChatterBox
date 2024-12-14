@@ -5,17 +5,19 @@ import { HOST } from '@/utils/constants';
 import { getColor } from '@/lib/utils';
 
 const ContactList = () => {
-  let {
+  const {
     selectedChatData,
     setSelectedChatData,
     setSelectedChatMessages,
     directMessageContacts,
     setSelectedChatType,
-  } = useAppStore();
+    setSelectedChatChannel,
+  } = useAppStore.getState();
 
   const handleClick = (contact: Contact) => {
     setSelectedChatData(contact);
     setSelectedChatType('contact');
+    setSelectedChatChannel(undefined);
 
     if (selectedChatData && selectedChatData._id !== contact._id) {
       setSelectedChatMessages([]);
@@ -26,9 +28,9 @@ const ContactList = () => {
     <div className="mt-5">
       {directMessageContacts.map((contact) => (
         <div
-          key={contact._id}
+          key={contact?._id}
           className={`pl-10 py-2 transition-all duration-300 cursor-pointer 
-        ${selectedChatData && selectedChatData._id === contact._id ? 'bg-pastel-light-pink hover:bg-pastel-sky-purple' : 'hover:bg-pastel-salmon'} `}
+        ${selectedChatData && selectedChatData._id === contact?._id ? 'bg-pastel-light-pink hover:bg-pastel-sky-purple' : 'hover:bg-pastel-salmon'} `}
           onClick={() => handleClick(contact)}
         >
           <div className="flex gap-5 items-center justify-start text-black">
@@ -42,10 +44,10 @@ const ContactList = () => {
                   />
                 ) : (
                   <div
-                    className={`uppercase h-10 w-10 text-lg border flex items-center justify-center rounded-full ${selectedChatData?._id === contact._id ? 'bg-pastel-peach border-2 border-white' : getColor(contact?.color!)}`}
+                    className={`uppercase h-10 w-10 text-lg border flex items-center justify-center rounded-full ${selectedChatData?._id === contact?._id ? 'bg-pastel-peach border-2 border-white' : getColor(contact?.color!)}`}
                   >
                     {contact?.firstName
-                      ? contact?.firstName.split('').shift()
+                      ? contact?.firstName?.split('').shift()
                       : contact?.email?.split('').shift()}
                   </div>
                 )}
@@ -53,7 +55,7 @@ const ContactList = () => {
             }
 
             <span>
-              {contact.firstName} {contact.lastName}
+              {contact?.firstName} {contact?.lastName}
             </span>
           </div>
         </div>

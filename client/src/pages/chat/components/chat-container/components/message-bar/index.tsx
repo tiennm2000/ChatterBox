@@ -18,6 +18,8 @@ const MessageBar = () => {
     setFileUploadProgress,
     selectedChatType,
     selectedChatChannel,
+    directMessageContacts,
+    setDirectMessageContacts,
   } = useAppStore();
   const socket = useSocket();
 
@@ -46,6 +48,15 @@ const MessageBar = () => {
         messageType: 'text',
         fileUrl: undefined,
       });
+      const newContactId = directMessageContacts.findIndex(
+        (contact) => contact._id === selectedChatData?._id
+      );
+      if (newContactId === -1) {
+        setDirectMessageContacts([
+          { ...selectedChatData!, lastMessageTime: new Date(Date.now()) },
+          ...directMessageContacts,
+        ]);
+      }
     } else if (selectedChatType === 'channel') {
       socket?.emit('send-channel-message', {
         sender: userInfo?._id,

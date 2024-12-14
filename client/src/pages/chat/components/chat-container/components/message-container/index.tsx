@@ -261,7 +261,7 @@ const MessageContainer = () => {
               >
                 {message.sender?.firstName
                   ? message.sender?.firstName?.split('').shift()
-                  : message.sender?.email.split('').shift()}
+                  : message.sender?.email?.split('').shift()}
               </AvatarFallback>
             </Avatar>
             <span className="text-sm text-white/60">{`${message.sender.firstName} ${message.sender.lastName}`}</span>

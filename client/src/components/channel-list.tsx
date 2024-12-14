@@ -9,12 +9,13 @@ const ChannelList = () => {
     setSelectedChatMessages,
     channels,
     setSelectedChatType,
-  } = useAppStore();
+    setSelectedChatData,
+  } = useAppStore.getState();
 
   const handleClick = (channel: Channel) => {
     setSelectedChatChannel(channel);
     setSelectedChatType('channel');
-
+    setSelectedChatData(undefined);
     if (selectedChatChannel && selectedChatChannel._id !== channel._id) {
       setSelectedChatMessages([]);
     }
