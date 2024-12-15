@@ -9,7 +9,9 @@ import setupSocket from "./socket";
 import messagesRoutes from "./routes/MessageRoute";
 import channelRoutes from "./routes/ChannelRoute";
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -17,7 +19,7 @@ const database_url = process.env.DATABASE_URL!;
 
 app.use(
   cors({
-    origin: [process.env.ORIGIN!],
+    origin: process.env.ORIGIN,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -35,7 +37,7 @@ app.use("/api/messages/", messagesRoutes);
 app.use("/api/channel", channelRoutes);
 
 const server = app.listen(port, () =>
-  console.log(`Server is running on http:\\localhost:${port}`)
+  console.log(`Server is running on http://localhost:${port}`)
 );
 
 setupSocket(server);
