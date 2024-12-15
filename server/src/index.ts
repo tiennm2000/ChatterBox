@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -27,6 +27,9 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.get("/", (request: Request, response: Response) => {
+  response.send("Hello World");
+});
 
 app.use("/uploads/profiles", express.static("uploads/profiles"));
 app.use("/uploads/files", express.static("uploads/files"));
